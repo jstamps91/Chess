@@ -39,7 +39,7 @@ public class Cell extends JPanel implements Cloneable {
         this.x = cell.x;
         this.y = cell.y;
 
-        setLayout(new BorderLayout);
+        setLayout(new BorderLayout());
 
         if((x + y) % 2 == 0) {
             setBackground(new Color(113, 198, 113));
