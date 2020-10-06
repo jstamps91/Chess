@@ -1,5 +1,7 @@
 package core;
 
+import gamepiece.Piece;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,9 +13,10 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 public class Player implements Serializable {
+
 
     public Player(String name) {
 
