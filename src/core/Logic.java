@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-public class Main extends JFrame implements MouseListener {
+public class Logic extends JFrame implements MouseListener {
 
-    private Main() {
+    private Logic() {
 
     }
 
