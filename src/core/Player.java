@@ -58,14 +58,14 @@ public class Player implements Serializable {
         gamesWon++;
     }
 
-    public static ArrayList<Player> fetch_players() {
+    public static ArrayList<Player> fetchPlayers() {
 
         Player tempPlayer;
         ObjectInputStream input = null;
         ArrayList<Player> players = new ArrayList<Player>();
 
         try {
-            File in = new File(System.getProperty("user.dir") + File.separator + "chessgamedata.txt");
+            File in = new File(System.getProperty("user.dir") + File.separator + "chessgamedata.dat");
             input = new ObjectInputStream(new FileInputStream(in));
 
             try {
@@ -98,7 +98,13 @@ public class Player implements Serializable {
         return players;
     }
 
-    public void update_player() {
+    public void updatePlayer() {
+
+        ObjectInputStream input = null;
+        ObjectOutputStream output = null;
+        Player tempPlayer;
+        File inputFile = null;
+        File outputFile = null;
 
     }
 
