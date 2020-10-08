@@ -57,7 +57,71 @@ public class King extends Piece {
 
     public boolean isInDanger(Cell state[][]) {
 
+        for(int i = x + 1; i < 8; i++) {
+            if(state[i][y].getPiece() == null) {
+                continue;
+            } else if(state[i][y].getPiece().getColor() == this.getColor()) {
+                break;
+            } else {
+                if((state[i][y].getPiece() instanceof Rook) || (state[i][y].getPiece() instanceof Queen)) {
+                    return true;
+                } else {
+                    break;
+                }
+            }
+        }
 
+        for(int i = x - 1; i >= 0; i--) {
+            if (state[i][y].getPiece() == null) {
+                continue;
+            } else if (state[i][y].getPiece().getColor() == this.getColor()) {
+                break;
+            } else {
+                if ((state[i][y].getPiece() instanceof Rook) || (state[i][y].getPiece() instanceof Queen)) {
+                    return true;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        for(int i = y + 1; i < 8; i++) {
+            if (state[x][i].getPiece() == null) {
+                continue;
+            } else if (state[x][i].getPiece().getColor() == this.getColor()) {
+                break;
+            } else {
+                if ((state[x][i].getPiece() instanceof Rook) || (state[x][i].getPiece() instanceof Queen)) {
+                    return true;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        for(int i = y - 1; i >= 0; i--) {
+            if (state[x][i].getPiece() == null) {
+                continue;
+            } else if (state[x][i].getPiece().getColor() == this.getColor()) {
+                break;
+            } else {
+                if ((state[x][i].getPiece() instanceof Rook) || (state[x][i].getPiece() instanceof Queen)) {
+                    return true;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // Checking for attack from diagonal direction
+        int tempX = x + 1, tempY = y - 1;
+
+
+
+
+
+
+        return true;
     }
 
 
