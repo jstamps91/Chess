@@ -24,8 +24,8 @@ public class Player implements Serializable {
     public Player(String name) {
 
         this.name = name.trim();
-        gamesPlayed = new Integer(0);
-        gamesWon = new Integer(0);
+        gamesPlayed = 0;
+        gamesWon = 0;
     }
 
     public String name() {
@@ -45,7 +45,7 @@ public class Player implements Serializable {
 
     public Integer winPercentage() {
 
-        return new Integer(gamesWon * 100) / gamesPlayed;
+        return gamesWon * 100 / gamesPlayed;
     }
 
     public void updateGamesPlayed() {

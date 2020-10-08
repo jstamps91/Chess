@@ -35,11 +35,28 @@ public class King extends Piece {
     }
 
     @Override
-    public ArrayList<Cell> move(Cell[][] pos, int x, int y) {
-        return null;
+    public ArrayList<Cell> move(Cell[][] state, int x, int y) {
+
+        // King can move 1 step. All adjacent cells have been considered
+        possibleMoves.clear();
+
+        int[] possibleX = {x, x, x + 1, x + 1, x + 1, x - 1, x - 1, x - 1};
+        int[] possibleY = {y - 1, y + 1, y - 1, y, y + 1, y - 1, y, y + 1};
+
+        for (int i = 0; i < 8; i++) {
+            if (possibleX[i] >= 0 && possibleX[i] < 8 &&
+                    possibleY[i] >= 0 && possibleY[i] < 8) {
+                if (state[possibleX[i]][possibleY[i]].getPiece() == null ||
+                        state[possibleX[i]][possibleY[i]].getPiece().getColor() != this.getColor()) {
+                    possibleMoves.add(state[possibleX[i]][possibleY[i]]);
+                }
+            }
+        }
+        return possibleMoves;
     }
 
     public boolean isInDanger(Cell state[][]) {
+
 
     }
 

@@ -46,7 +46,7 @@ public class Time {
                 label.setText("Times Up!");
                 reset();
                 start();
-                Logic.Mainboard.changeChance();
+                Logic.Mainboard.changeTurn();
             }
         }
     }
