@@ -363,27 +363,311 @@ public class Logic extends JFrame implements MouseListener {
 
     private boolean isKingInDanger(Cell from, Cell to) {
 
+        Cell newBoardState[][] = new Cell[8][8];
 
+        for(int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+
+                try {
+                    newBoardState[i][j] = new Cell(boardState[i][j]);
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                    System.out.println("There is a problem with cloning!");
+                }
+            }
+
+            if (newBoardState[to.x][to.y].getPiece() != null) {
+                newBoardState[to.x][to.y].removePiece();
+            }
+
+            newBoardState[to.x][to.y].setPiece(newBoardState[from.x][from.y].getPiece());
+
+            if (newBoardState[to.x][to.y].getPiece() instanceof King) {
+                ((King) (newBoardState[to.x][to.y].getPiece())).setX(to.x);
+                ((King) (newBoardState[to.x][to.y].getPiece())).setY(to.y);
+            }
+
+            newBoardState[from.x][from.y].removePiece();
+
+            if (((King) (newBoardState[getKing(chance).getX()][getKing(chance).getY()].getPiece())).isInDanger(newBoardState)) {
+                return true;
+            } else {
+                return false;
+            }
     }
 
     private ArrayList<Cell> filterDestination(ArrayList<Cell> destlist, Cell from) {
 
+        ArrayList<Cell> newList = new ArrayList<Cell>();
+        Cell[][] newBoardState = new Cell[8][8];
+        ListIterator<Cell> iter = destlist.listIterator();
+        int x, y;
+
+        while(iter.hasNext()) {
+
+            for(int i = 0; i < 8; i++) {
+                for(int j = 0; j < 8; j++) {
+
+                    try {
+                        newBoardState[i][j] = new Cell(boardState[i][j]);
+                    } catch(CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Cell tempCell = iter.next();
+
+                if(newBoardState[tempCell.x][tempCell.y].getPiece() != null) {
+                    newBoardState[tempCell.x][tempCell.y].removePiece();
+                }
+
+                newBoardState[tempCell.x][tempCell.y].setPiece(newBoardState[from.x][from.y].getPiece());
+
+                x = getKing(chance).getX();
+                y = getKing(chance).getY();
+
+                if(newBoardState[from.x][from.y].getPiece() instanceof King) {
+                    ((King)(newBoardState[tempCell.x][tempCell.y].getPiece())).setX(tempCell.x);
+                    ((King)(newBoardState[tempCell.x][tempCell.y].getPiece())).setY(tempCell.y);
+
+                    x = tempCell.x;
+                    y = tempCell.y;
+                }
+
+                newBoardState[from.x][from.y].removePiece();
+
+                if((!((King) (newBoardState[x][y].getPiece())).isInDanger(newBoardState))) {
+                    newList.add(tempCell);
+                }
+            }
+        }
+        return newList;
     }
 
     private ArrayList<Cell> inCheckFilter(ArrayList<Cell> destlist, Cell from, int color) {
 
+        ArrayList<Cell> newList = new ArrayList<Cell>();
+        Cell[][] newBoardState = new Cell[8][8];
+        ListIterator<Cell> iter = destlist.listIterator();
+        int x, y;
+
+        while(iter.hasNext()) {
+
+            for(int i = 0; i < 8; i++) {
+                for(int j = 0; j < 8; j++) {
+
+                    try {
+                        newBoardState[i][j] = new Cell(boardState[i][j]);
+                    } catch(CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Cell tempCell = iter.next();
+
+                if(newBoardState[tempCell.x][tempCell.y].getPiece() != null) {
+                    newBoardState[tempCell.x][tempCell.y].removePiece();
+                }
+
+                newBoardState[tempCell.x][tempCell.y].setPiece(newBoardState[from.x][from.y].getPiece());
+
+                x = getKing(color).getX();
+                y = getKing(color).getY();
+
+                if(newBoardState[from.x][from.y].getPiece() instanceof King) {
+                    ((King)(newBoardState[tempCell.x][tempCell.y].getPiece())).setX(tempCell.x);
+                    ((King)(newBoardState[tempCell.x][tempCell.y].getPiece())).setY(tempCell.y);
+
+                    x = tempCell.x;
+                    y = tempCell.y;
+                }
+
+                newBoardState[from.x][from.y].removePiece();
+
+                if((!((King) (newBoardState[x][y].getPiece())).isInDanger(newBoardState))) {
+                    newList.add(tempCell);
+                }
+            }
+        }
+        return newList;
     }
 
     public boolean checkmate(int color) {
 
+        ArrayList<Cell> dList = new ArrayList<>();
+
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+
+                if(boardState[i][j].getPiece() != null && boardState[i][j].getPiece().getColor() == color) {
+                    dList.clear();
+                    dList = boardState[i][j].getPiece().move(boardState, i, j);
+                    dList = inCheckFilter(dList, boardState[i][j], color);
+
+                    if(dList.size() != 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
+    @SuppressWarnings("deprecation")
     private void gameOver() {
 
+        cleanDestinations(destinationList);
+        displayTime.disable();
+        timer.countdownTimer.stop();
+
+        if(previous != null) {
+            previous.removePiece();
+        }
+
+        if(chance == 0) {
+            white.updateGamesWon();
+            white.updatePlayer();
+            winner = white.name();
+        } else {
+            black.updateGamesWon();
+            black.updatePlayer();
+            winner = black.name();
+        }
+
+        JOptionPane.showMessageDialog(board, "Checkmate!\n" + winner + "wins");
+
+        whitePlayer.remove(wDetails);
+        blackPlayer.remove(bDetails);
+
+        displayTime.remove(label);
+        displayTime.add(start);
+
+        showPlayer.remove(mov);
+        showPlayer.remove(CHNC);
+        showPlayer.revalidate();
+        showPlayer.add(timeSlider);
+
+        split.remove(board);
+        split.add(temp);
+
+        wNewPlayer.enable();
+        bNewPlayer.enable();
+
+        wSelect.enable();
+        bSelect.enable();
+
+        end = true;
+
+        Mainboard.disable();
+        Mainboard.dispose();
+        Mainboard = new Logic();
+        Mainboard.setVisible(true);
+        Mainboard.setResizable(false);
     }
 
     public void mouseClicked(MouseEvent arg0) {
 
+        cell = (Cell) arg0.getSource();
+
+        if(previous == null) {
+            if(cell.getPiece() != null) {
+                if(cell.getPiece().getColor() != chance) {
+                    return;
+                }
+
+                cell.select();
+                previous = cell;
+
+                destinationList.clear();
+                destinationList = cell.getPiece().move(boardState, cell.x, cell.y);
+
+                if(cell.getPiece() instanceof King) {
+                    destinationList = filterDestination(destinationList, cell);
+                } else {
+                    if(boardState[getKing(chance).getX()][getKing(chance).getY()].isCheck()) {
+                        destinationList = new ArrayList<Cell>(filterDestination(destinationList, cell));
+                    } else if(!destinationList.isEmpty() && isKingInDanger(cell, destinationList.get(0))) {
+                        destinationList.clear();
+                    }
+                }
+                highlightDestinations(destinationList);
+            }
+        } else {
+            if(cell.x == previous.x && cell.y == previous.y) {
+                cell.deselect();
+                cleanDestinations(destinationList);
+                destinationList.clear();
+                previous = null;
+            } else if(cell.getPiece() == null || previous.getPiece().getColor() != cell.getPiece().getColor()) {
+                if(cell.isPossibleDestination()) {
+                    if(cell.getPiece() != null) {
+                        cell.removePiece();
+                    }
+                    cell.setPiece(previous.getPiece());
+
+                    if(previous.isCheck()) {
+                        previous.removeCheck();
+                    }
+                    previous.removePiece();
+
+                    if(getKing(chance^1).isInDanger(boardState)) {
+                        boardState[getKing(chance^1).getX()][getKing(chance^1).getY()].setCheck();
+
+                        if(checkmate(getKing(chance^1).getColor())) {
+                            previous.deselect();
+
+                            if(previous.getPiece() != null) {
+                                previous.removePiece();
+                            }
+                            gameOver();
+                        }
+                    }
+                    if(!getKing(chance).isInDanger(boardState)) {
+                        boardState[getKing(chance).getX()][getKing(chance).getY()].removeCheck();
+                    }
+
+                    if(cell.getPiece() instanceof King) {
+                        ((King) cell.getPiece()).setX(cell.x);
+                        ((King) cell.getPiece()).setY(cell.y);
+                    }
+                    changeTurn();
+
+                    if(!end) {
+                        timer.reset();
+                        timer.start();
+                    }
+                }
+                if(previous != null) {
+                    previous.deselect();
+                    previous = null;
+                }
+                cleanDestinations(destinationList);
+                destinationList.clear();
+
+            } else if(previous.getPiece().getColor() == cell.getPiece().getColor()) {
+                previous.deselect();
+                cleanDestinations(destinationList);
+                destinationList.clear();
+                cell.select();
+                previous = cell;
+                destinationList = cell.getPiece().move(boardState, cell.x, cell.y);
+
+                if(cell.getPiece() instanceof King) {
+                    destinationList = filterDestination(destinationList, cell);
+                } else {
+                    if(boardState[getKing(chance).getX()][getKing(chance).getY()].isCheck()) {
+                        destinationList = new ArrayList<Cell>(filterDestination(destinationList, cell));
+                    } else if(!destinationList.isEmpty() && isKingInDanger(cell, destinationList.get(0))) {
+                        destinationList.clear();
+                    }
+                }
+                highlightDestinations(destinationList);
+            }
+        }
+        if(cell.getPiece() != null && cell.getPiece() instanceof King) {
+            ((King) cell.getPiece()).setX(cell.x);
+            ((King) cell.getPiece()).setY(cell.y);
+        }
     }
 
     //Other Irrelevant abstract function. Only the Click Event is captured.
@@ -406,9 +690,46 @@ public class Logic extends JFrame implements MouseListener {
 
     class START implements ActionListener {
 
+        @SuppressWarnings("deprecation")
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            if(white == null || black == null) {
+                JOptionPane.showMessageDialog(controlPanel, "Fill in the details");
+                return;
+            }
+
+            white.updateGamesPlayed();
+            white.updatePlayer();
+            black.updateGamesPlayed();
+            black.updatePlayer();
+
+            wNewPlayer.disable();
+            bNewPlayer.disable();
+            wSelect.disable();
+            bSelect.disable();
+
+            split.remove(temp);
+            split.add(board);
+
+            showPlayer.remove(timeSlider);
+
+            mov = new JLabel("Move: ");
+            mov.setFont(new Font("Comic Sans MS", Font.PLAIN, 20));
+            mov.setForeground(Color.RED);
+
+            showPlayer.add(mov);
+
+            CHNC = new JLabel(move);
+            CHNC.setFont(new Font("Comic Sans MS", Font.BOLD, 20));
+            CHNC.setForeground(Color.BLUE);
+
+            showPlayer.add(CHNC);
+
+            displayTime.remove(start);
+            displayTime.add(label);
+            timer = new Time(label);
+            timer.start();
         }
     }
 
@@ -417,22 +738,142 @@ public class Logic extends JFrame implements MouseListener {
         @Override
         public void stateChanged(ChangeEvent e) {
 
+            timeRemaining = timeSlider.getValue() * 60;
         }
     }
 
     class SelectHandler implements ActionListener {
 
+        private int color;
+
+        SelectHandler(int i) {
+            color = i;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            tempPlayer = null;
+            String n = (color == 0) ? wName : bName;
+
+            JComboBox<String> jCB = (color == 0) ? wCombo : bCombo;
+            JComboBox<String> ojCB = (color == 0) ? bCombo : wCombo;
+            ArrayList<Player> player = (color == 0) ? wPlayer : bPlayer;
+            ArrayList<Player> oPlayer = Player.fetchPlayers();
+
+            if(oPlayer.isEmpty()) {
+                return;
+            }
+
+            JPanel det = (color == 0) ? wDetails : bDetails;
+            JPanel PL = (color == 0) ? whitePlayer : blackPlayer;
+
+            if(selected) {
+                det.removeAll();
+            }
+
+            n = (String)jCB.getSelectedItem();
+            Iterator<Player> iter = player.iterator();
+            Iterator<Player> oIter = oPlayer.iterator();
+
+            while(iter.hasNext()) {
+                Player p = iter.next();
+
+                if(p.name().equals(n)) {
+                    tempPlayer = p;
+                    break;
+                }
+            }
+
+            while(oIter.hasNext()) {
+                Player p = oIter.next();
+
+                if(p.name().equals(n)) {
+                    oPlayer.remove(p);
+                    break;
+                }
+            }
+
+            if(tempPlayer == null) {
+                return;
+            }
+
+            if(color == 0) {
+                white = tempPlayer;
+            } else {
+                black = tempPlayer;
+            }
+
+            bPlayer = oPlayer;
+            ojCB.removeAllItems();
+
+            for(Player s : oPlayer) {
+                ojCB.addItem(s.name());
+            }
+
+            det.add(new JLabel(" " + tempPlayer.name()));
+            det.add(new JLabel(" " + tempPlayer.gamesPlayed()));
+            det.add(new JLabel(" " + tempPlayer.gamesWon()));
+
+            PL.revalidate();
+            PL.repaint();
+            PL.add(det);
+            selected = true;
         }
     }
 
     class Handler implements ActionListener {
 
+        private int color;
+
+        Handler(int i) {
+            color = i;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
 
+            String n = (color == 0) ? wName : bName;
+            JPanel jpanel = (color == 0) ? whitePlayer : blackPlayer;
+            ArrayList<Player> N = Player.fetchPlayers();
+            Iterator<Player> iter = N.iterator();
+            JPanel det = (color == 0) ? wDetails : bDetails;
+            n = JOptionPane.showInputDialog(jpanel, "Enter your name");
+
+            if(n != null) {
+
+                while(iter.hasNext()) {
+
+                    if(iter.next().name().equals(n)) {
+                        JOptionPane.showMessageDialog(jpanel, "Player exists");
+                        return;
+                    }
+                }
+
+                if(n.length() != 0) {
+                    Player temp = new Player(n);
+                    temp.updatePlayer();
+
+                    if(color == 0)
+                        white = temp;
+                    else
+                        black = temp;
+                } else return;
+
+            } else {
+                return;
+            }
+
+            det.removeAll();
+            det.add(new JLabel(" " + n));
+            det. add(new JLabel(" 0"));
+            det. add(new JLabel(" 0"));
+
+            jpanel.revalidate();
+            jpanel.repaint();
+            jpanel.add(det);
+
+            selected = true;
         }
     }
 }
