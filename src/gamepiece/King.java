@@ -55,7 +55,7 @@ public class King extends Piece {
         return possibleMoves;
     }
 
-    public boolean isInDanger(Cell state[][]) {
+    public boolean isInDanger(Cell[][] state) {
 
         for(int i = x + 1; i < 8; i++) {
             if(state[i][y].getPiece() == null) {
