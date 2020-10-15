@@ -1,23 +1,12 @@
 package core;
 
-import gamepiece.Piece;
-
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import javax.swing.*;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Player implements Serializable {
 
-    private String name;
+    private final String name;
     private Integer gamesPlayed;
     private Integer gamesWon;
 
@@ -62,7 +51,7 @@ public class Player implements Serializable {
 
         Player tempPlayer;
         ObjectInputStream input = null;
-        ArrayList<Player> players = new ArrayList<Player>();
+        ArrayList<Player> players = new ArrayList<>();
 
         try {
             File in = new File(System.getProperty("user.dir") + File.separator + "chessgamedata.dat");
@@ -84,8 +73,9 @@ public class Player implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
             try {
+                assert input != null;
                 input.close();
-            } catch (IOException ioe) {}
+            } catch (IOException ignored) {}
             JOptionPane.showMessageDialog(null, "Unable to read required game files!");
 
         } catch (ClassNotFoundException e) {

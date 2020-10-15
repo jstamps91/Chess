@@ -27,44 +27,42 @@ public class Logic extends JFrame implements MouseListener {
     private static Rook wr01, wr02, br01, br02;
     private static Bishop wb01, wb02, bb01, bb02;
     private static Knight wk01, wk02, bk01, bk02;
-    private static Pawn wp[], bp[];
+    private static Pawn[] wp, bp;
     private static Queen wq, bq;
     private static King wk, bk;
-    private Cell cell, previous;
+    private Cell previous;
     private int chance = 0;
-    private Cell boardState[][];
+    private final Cell[][] boardState;
     private ArrayList<Cell> destinationList = new ArrayList<>();
     private Player white = null, black = null;
-    private JPanel board = new JPanel(new GridLayout(8, 8));
-    private JPanel wDetails = new JPanel(new GridLayout(3, 3));
-    private JPanel bDetails = new JPanel(new GridLayout(3, 3));
-    private JPanel wComboPanel = new JPanel();
-    private JPanel bComboPanel = new JPanel();
-    private JPanel controlPanel, whitePlayer, blackPlayer,
-            displayTime, showPlayer, time, temp;
+    private final JPanel board;
+    private final JPanel wDetails, bDetails;
+    private final JPanel controlPanel;
+    private final JPanel whitePlayer;
+    private final JPanel blackPlayer;
+    private JPanel displayTime;
+    private JPanel showPlayer;
+    private JPanel temp;
     private JSplitPane split;
     private JLabel label, mov;
     private static JLabel CHNC;
     private Time timer;
     public static Logic Mainboard;
     private boolean selected = false, end = false;
-    private Container content;
-    private ArrayList<Player> wPlayer, bPlayer;
-    private ArrayList<String> wNames = new ArrayList<>();
-    private ArrayList<String> bNames = new ArrayList<>();
-    private JComboBox<String> wCombo, bCombo;
-    private String wName = null, bName = null, winner = null;
+    private final ArrayList<Player> wPlayer;
+    private ArrayList<Player> bPlayer;
+    private final JComboBox<String> wCombo, bCombo;
+    private String winner;
     static String move;
-    private Player tempPlayer;
-    private JScrollPane wScroll, bScroll;
-    private String[] WNames = {}, BNames = {};
-    private JSlider timeSlider;
+    private final JSlider timeSlider;
     private BufferedImage image;
-    private Button start, wSelect, bSelect, wNewPlayer, bNewPlayer;
+    private Button start;
+    private final Button wSelect, bSelect;
+    private final Button wNewPlayer, bNewPlayer;
     public static int timeRemaining = 60;
 
     public static void main(String[] args) {
-        // Variable initialization
+        // GamePiece initialization
         wr01=new Rook("WR01","/resources/White_Rook.png",0);
         wr02=new Rook("WR02","/resources/White_Rook.png",0);
         br01=new Rook("BR01","/resources/Black_Rook.png",1);
@@ -81,9 +79,9 @@ public class Logic extends JFrame implements MouseListener {
         bq=new Queen("BQ","/resources/Black_Queen.png",1);
         wk=new King("WK","/resources/White_King.png",0,7,3);
         bk=new King("BK","/resources/Black_King.png",1,0,3);
+
         wp=new Pawn[8];
         bp=new Pawn[8];
-
         for(int i = 0; i < 8; i++) {
             wp[i] = new Pawn("WP0" + (i + 1), "/resources/White_Pawn.png", 0);
             bp[i] = new Pawn("BP0" + (i + 1), "/resources/Black_Pawn.png", 1);
@@ -101,18 +99,17 @@ public class Logic extends JFrame implements MouseListener {
         timeSlider = new JSlider();
 
         move = "White";
-        wName = null;
-        bName = null;
         winner = null;
         board = new JPanel(new GridLayout(8, 8));
         wDetails = new JPanel(new GridLayout(3, 3));
         bDetails = new JPanel(new GridLayout(3, 3));
-        wComboPanel = new JPanel();
-        bComboPanel = new JPanel();
-        wNames = new ArrayList<String>();
-        bNames = new ArrayList<String>();
+        JPanel wComboPanel = new JPanel();
+        JPanel bComboPanel = new JPanel();
+        ArrayList<String> wNames = new ArrayList<>();
+        ArrayList<String> bNames = new ArrayList<>();
 
         board.setMinimumSize(new Dimension(800, 700));
+
         ImageIcon img = new ImageIcon(getClass().getResource("/resources/icon.png"));
         this.setIconImage(img.getImage());
 
@@ -136,13 +133,15 @@ public class Logic extends JFrame implements MouseListener {
             bNames.add(player.name());
         }
 
+        String[] WNames = {};
+        String[] BNames = {};
         WNames = wNames.toArray(WNames);
         BNames = bNames.toArray(BNames);
 
         Cell cell;
         board.setBorder(BorderFactory.createLoweredBevelBorder());
-        gamepiece.Piece P;
-        content = getContentPane();
+
+        Container content = getContentPane();
         setSize(width, height);
         setTitle("Chess");
         content.setBackground(Color.black);
@@ -169,11 +168,11 @@ public class Logic extends JFrame implements MouseListener {
         JPanel whiteStats = new JPanel(new GridLayout(3,3));
         JPanel blackStats = new JPanel(new GridLayout(3,3));
 
-        wCombo = new JComboBox<String>(WNames);
-        bCombo = new JComboBox<String>(BNames);
+        wCombo = new JComboBox<>(WNames);
+        bCombo = new JComboBox<>(BNames);
 
-        wScroll = new JScrollPane(wCombo);
-        bScroll = new JScrollPane(bCombo);
+        JScrollPane wScroll = new JScrollPane(wCombo);
+        JScrollPane bScroll = new JScrollPane(bCombo);
 
         wComboPanel.setLayout(new FlowLayout());
         bComboPanel.setLayout(new FlowLayout());
@@ -214,41 +213,42 @@ public class Logic extends JFrame implements MouseListener {
 
         // Defines all of the Cells
         boardState = new Cell[8][8];
+        Piece P;
 
         for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
+            for (int j = 0; j < 8; j++) {
                 P = null;
-                if(i == 0 && j == 0) {
+                if (i == 0 && j == 0) {
                     P = br01;
-                } else if(i == 0 && j == 7) {
+                } else if (i == 0 && j == 7) {
                     P = br02;
-                } else if(i == 7 && j == 0) {
+                } else if (i == 7 && j == 0) {
                     P = wr01;
-                } else if(i == 7 && j == 7) {
+                } else if (i == 7 && j == 7) {
                     P = wr02;
-                } else if(i == 0 && j == 1) {
+                } else if (i == 0 && j == 1) {
                     P = bk01;
-                } else if(i == 0 && j == 6) {
+                } else if (i == 0 && j == 6) {
                     P = bk02;
-                } else if(i == 7 && j == 1) {
+                } else if (i == 7 && j == 1) {
                     P = wk01;
-                } else if(i == 7 && j == 6) {
+                } else if (i == 7 && j == 6) {
                     P = wk02;
-                } else if(i == 0 && j == 2) {
+                } else if (i == 0 && j == 2) {
                     P = bb01;
-                } else if(i == 0 && j == 5) {
+                } else if (i == 0 && j == 5) {
                     P = bb02;
-                } else if(i == 7 && j == 2) {
+                } else if (i == 7 && j == 2) {
                     P = wb01;
-                } else if(i == 7 && j == 5) {
+                } else if (i == 7 && j == 5) {
                     P = wb02;
-                } else if(i == 0 && j == 3) {
+                } else if (i == 0 && j == 3) {
                     P = bk;
-                } else if(i == 0 && j == 4) {
+                } else if (i == 0) {
                     P = bq;
-                } else if(i == 7 && j == 3) {
+                } else if (i == 7 && j == 3) {
                     P = wk;
-                } else if(i == 7 && j == 4) {
+                } else if (i == 7) {
                     P = wq;
                 } else if (i == 1) {
                     P = bp[j];
@@ -261,6 +261,7 @@ public class Logic extends JFrame implements MouseListener {
                 board.add(cell);
                 boardState[i][j] = cell;
             }
+        }
 
             showPlayer = new JPanel(new FlowLayout());
             showPlayer.add(timeSlider);
@@ -274,7 +275,7 @@ public class Logic extends JFrame implements MouseListener {
             label = new JLabel("Time starts now.", JLabel.CENTER);
             label.setFont(new Font("SERIF", Font.BOLD, 30));
             displayTime = new JPanel(new FlowLayout());
-            time = new JPanel(new GridLayout(3,3));
+            JPanel time = new JPanel(new GridLayout(3, 3));
             time.add(setTime);
             time.add(showPlayer);
             displayTime.add(start);
@@ -304,7 +305,7 @@ public class Logic extends JFrame implements MouseListener {
 
             content.add(split);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
-        }
+
     }
 
 
@@ -365,7 +366,7 @@ public class Logic extends JFrame implements MouseListener {
 
     private boolean isKingInDanger(Cell from, Cell to) {
 
-        Cell newBoardState[][] = new Cell[8][8];
+        Cell[][] newBoardState = new Cell[8][8];
 
         for(int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
@@ -391,16 +392,12 @@ public class Logic extends JFrame implements MouseListener {
 
             newBoardState[from.x][from.y].removePiece();
 
-            if (((King) (newBoardState[getKing(chance).getX()][getKing(chance).getY()].getPiece())).isInDanger(newBoardState)) {
-                return true;
-            } else {
-                return false;
-            }
+        return ((King) (newBoardState[getKing(chance).getX()][getKing(chance).getY()].getPiece())).isInDanger(newBoardState);
     }
 
     private ArrayList<Cell> filterDestination(ArrayList<Cell> destlist, Cell from) {
 
-        ArrayList<Cell> newList = new ArrayList<Cell>();
+        ArrayList<Cell> newList = new ArrayList<>();
         Cell[][] newBoardState = new Cell[8][8];
         ListIterator<Cell> iter = destlist.listIterator();
         int x, y;
@@ -448,7 +445,7 @@ public class Logic extends JFrame implements MouseListener {
 
     private ArrayList<Cell> inCheckFilter(ArrayList<Cell> destlist, Cell from, int color) {
 
-        ArrayList<Cell> newList = new ArrayList<Cell>();
+        ArrayList<Cell> newList = new ArrayList<>();
         Cell[][] newBoardState = new Cell[8][8];
         ListIterator<Cell> iter = destlist.listIterator();
         int x, y;
@@ -569,7 +566,7 @@ public class Logic extends JFrame implements MouseListener {
 
     public void mouseClicked(MouseEvent arg0) {
 
-        cell = (Cell) arg0.getSource();
+        Cell cell = (Cell) arg0.getSource();
 
         if(previous == null) {
             if(cell.getPiece() != null) {
@@ -587,7 +584,7 @@ public class Logic extends JFrame implements MouseListener {
                     destinationList = filterDestination(destinationList, cell);
                 } else {
                     if(boardState[getKing(chance).getX()][getKing(chance).getY()].isCheck()) {
-                        destinationList = new ArrayList<Cell>(filterDestination(destinationList, cell));
+                        destinationList = new ArrayList<>(filterDestination(destinationList, cell));
                     } else if(!destinationList.isEmpty() && isKingInDanger(cell, destinationList.get(0))) {
                         destinationList.clear();
                     }
@@ -659,7 +656,7 @@ public class Logic extends JFrame implements MouseListener {
                     destinationList = filterDestination(destinationList, cell);
                 } else {
                     if(boardState[getKing(chance).getX()][getKing(chance).getY()].isCheck()) {
-                        destinationList = new ArrayList<Cell>(filterDestination(destinationList, cell));
+                        destinationList = new ArrayList<>(filterDestination(destinationList, cell));
                     } else if(!destinationList.isEmpty() && isKingInDanger(cell, destinationList.get(0))) {
                         destinationList.clear();
                     }
@@ -748,7 +745,7 @@ public class Logic extends JFrame implements MouseListener {
 
     class SelectHandler implements ActionListener {
 
-        private int color;
+        private final int color;
 
         SelectHandler(int i) {
             color = i;
@@ -757,8 +754,8 @@ public class Logic extends JFrame implements MouseListener {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            tempPlayer = null;
-            String n = (color == 0) ? wName : bName;
+            Player tempPlayer = null;
+            String n;
 
             JComboBox<String> jCB = (color == 0) ? wCombo : bCombo;
             JComboBox<String> ojCB = (color == 0) ? bCombo : wCombo;
@@ -828,7 +825,7 @@ public class Logic extends JFrame implements MouseListener {
 
     class Handler implements ActionListener {
 
-        private int color;
+        private final int color;
 
         Handler(int i) {
             color = i;
@@ -837,7 +834,7 @@ public class Logic extends JFrame implements MouseListener {
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            String n = (color == 0) ? wName : bName;
+            String n;
             JPanel jpanel = (color == 0) ? whitePlayer : blackPlayer;
             ArrayList<Player> N = Player.fetchPlayers();
             Iterator<Player> iter = N.iterator();

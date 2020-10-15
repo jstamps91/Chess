@@ -1,6 +1,5 @@
 package core;
 
-import gamepiece.King;
 import gamepiece.Piece;
 import javax.swing.*;
 import java.awt.*;

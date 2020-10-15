@@ -59,7 +59,6 @@ public class King extends Piece {
 
         for(int i = x + 1; i < 8; i++) {
             if(state[i][y].getPiece() == null) {
-                continue;
             } else if(state[i][y].getPiece().getColor() == this.getColor()) {
                 break;
             } else {
@@ -73,7 +72,6 @@ public class King extends Piece {
 
         for(int i = x - 1; i >= 0; i--) {
             if (state[i][y].getPiece() == null) {
-                continue;
             } else if (state[i][y].getPiece().getColor() == this.getColor()) {
                 break;
             } else {
@@ -87,7 +85,6 @@ public class King extends Piece {
 
         for(int i = y + 1; i < 8; i++) {
             if (state[x][i].getPiece() == null) {
-                continue;
             } else if (state[x][i].getPiece().getColor() == this.getColor()) {
                 break;
             } else {
@@ -101,7 +98,6 @@ public class King extends Piece {
 
         for(int i = y - 1; i >= 0; i--) {
             if (state[x][i].getPiece() == null) {
-                continue;
             } else if (state[x][i].getPiece().getColor() == this.getColor()) {
                 break;
             } else {

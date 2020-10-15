@@ -8,7 +8,7 @@ import javax.swing.Timer;
 
 public class Time {
 
-    private JLabel label;
+    private final JLabel label;
     Timer countdownTimer;
     int timeRemaining;
 
@@ -39,7 +39,7 @@ public class Time {
             if(timeRemaining > 0) {
                 min = timeRemaining / 60;
                 sec = timeRemaining % 60;
-                label.setText(String.valueOf(min) + ";" +
+                label.setText(min + ":" +
                         (sec >= 10 ? String.valueOf(sec) : "0" + String.valueOf(sec)));
                 timeRemaining--;
             } else {

@@ -10,7 +10,7 @@ public abstract class Piece implements Cloneable {
     private String path;
     private int color;
 
-    protected ArrayList<Cell> possibleMoves = new ArrayList<Cell>(); // child classes have access to protected
+    protected ArrayList<Cell> possibleMoves = new ArrayList<>(); // child classes have access to protected
 
     public abstract ArrayList<Cell> move(Cell[][] pos, int x, int y); // abstract must be overridden
 
